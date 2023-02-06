@@ -12,7 +12,7 @@ function createNewStudent(req: Request, res: Response): void {
 
     // If the student's data was not added succesfully
     if (!didAddStudent) {
-        res.sendStatus(409); // 409 Conflict - student's name already exists in set
+        res.sendStatus(409); // 409 Conflict - student's name already exists or weights do not sum to 100
         return;
     }
 

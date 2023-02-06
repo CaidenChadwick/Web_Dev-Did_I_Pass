@@ -1,10 +1,14 @@
 const students: StudentManager = {};
 
 function calculateAverage(weights: CourseGrades): number {
+
     let total: number = 0;
     for (let i = 0; i < weights.assignmentWeights.length; i += 1) {
         total += weights.assignmentWeights[i].grade * weights.assignmentWeights[i].weight / 100;
     }
+
+    if (total + weights.finalExamWeight !== 100)
+        return -1;
 
     // Return average (excluding final exam)
     const average: number = total / weights.assignmentWeights.length;
@@ -18,8 +22,12 @@ function addStudent(newStudentData: NewStudentRequest): boolean {
     if (name in students)
         return false;
 
-    // Calculate average and create new student
+    // Calculate average and test weight sum
     const average = calculateAverage(weights);
+    if (average === -1)
+        return false;
+
+    // create new student
     const newStudent: Student = {
         name: name,
         weights: weights,
