@@ -31,6 +31,7 @@ function getStudentByName(req: Request, res: Response): void {
     }
 
     // Respond with the student's information as json
+    res.sendStatus(200); // 200 OK - student data was retrieved
     res.json(student);
 }
 
