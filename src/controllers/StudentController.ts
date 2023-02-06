@@ -8,6 +8,15 @@ function getAllStudents(req: Request, res: Response): void {
 function createNewStudent(req: Request, res: Response): void {
     const studentData = req.body as NewStudentRequest;
 
+    const weights = studentData.weights.assignmentWeights.reduce((prev: number, curr: CourseGrade) => {
+        return prev + curr.weight;
+    }, 0);
+
+    if (weights + studentData.weights.finalExamWeight !== 100) {
+        res.sendStatus(400); // 400 Bad Request - weights don't sum to 100
+        return;
+    }
+
     const didAddStudent = addStudent(studentData);
 
     // If the student's data was not added succesfully
@@ -31,7 +40,6 @@ function getStudentByName(req: Request, res: Response): void {
     }
 
     // Respond with the student's information as json
-    res.sendStatus(200); // 200 OK - student data was retrieved
     res.json(student);
 }
 
