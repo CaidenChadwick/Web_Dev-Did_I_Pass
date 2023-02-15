@@ -7,7 +7,7 @@ function calculateAverage(weights: CourseGrades): number {
     }, 0);
 
     // Return average (excluding final exam)
-    const average: number = total / weights.assignmentWeights.length;
+    const average = 100 * total / (100 - weights.finalExamWeight);
     return average;
 }
 
@@ -48,4 +48,10 @@ function getStudent(studentName: string): Student | undefined {
     return students[studentName];
 }
 
-export { students, addStudent, getStudent };
+function calculateFinalExamScore(currentAverage: number, finalExamWeight: number, targetScore: number): number {
+    // Calculate the final exam score needed to get the targetScore in the class
+    const weightedAverage = currentAverage * (1 - finalExamWeight / 100);
+    return 100 * (targetScore - weightedAverage) / finalExamWeight;
+}
+
+export { students, addStudent, getStudent, calculateFinalExamScore };
