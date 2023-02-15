@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { students, addStudent, getStudent, calculateFinalExamScore } from '../models/StudentModel';
+import { students, addStudent, getStudent, calculateFinalExamScore, getLetterGrade } from '../models/StudentModel';
 
 function getAllStudents(req: Request, res: Response): void {
     res.json(students);
@@ -51,7 +51,7 @@ function getFinalExamScores(req: Request, res: Response): void {
 
     // If the student was not found
     if (!student) {
-        res.sendStatus(404); // 404 Not Found - student is not in set
+        res.sendStatus(404); // 404 Not Found - Student is not in set
         return;
     }
 
@@ -75,4 +75,36 @@ function getFinalExamScores(req: Request, res: Response): void {
 
 }
 
-export { getAllStudents, createNewStudent, getStudentByName, getFinalExamScores };
+function calcFinalScore(req: Request, res: Response): void {
+    // Get the student name from the path params
+    const { studentName } = req.params as StudentNameParams;
+
+    // Get the student's data from the dataset
+    const student = getStudent(studentName);
+
+    // If the student was not found 
+    if (!student) {
+        res.sendStatus(404); // 404 Not Found - Student is not in set
+        return;
+    }
+
+
+    // Get the grade data from the request body as the `AssignmentGrade` type
+    const { grade } = req.body as AssignmentGrade;
+
+    // Get the current average and weights from the student's data
+    const { currentAverage, weights } = student;
+
+    // Calculate the final score that would receive using their current average and the hypothetical final exam grade.
+    const overallScore = (currentAverage * (100 - weights.finalExamWeight) + grade * (weights.finalExamWeight)) / 100;
+    // Get the letter grade they would receive given this score
+    const letterGrade = getLetterGrade(overallScore);
+
+    // Send back a JSON response containing their `overallScore` and `letterGrade.
+    res.json({
+        "overallScore": overallScore,
+        "letterGrade": letterGrade
+    });
+}
+
+export { getAllStudents, createNewStudent, getStudentByName, getFinalExamScores, calcFinalScore };

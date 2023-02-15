@@ -21,15 +21,15 @@ function addStudent(newStudentData: NewStudentRequest): boolean {
     }
 
     // Calculate average and test weight sum
-    const average = calculateAverage(weights);
-    if (average === -1)
+    const currentAverage = calculateAverage(weights);
+    if (currentAverage === -1)
         return false;
 
     // create new student
     const newStudent: Student = {
-        name: name,
-        weights: weights,
-        currentAverage: average
+        name,
+        weights,
+        currentAverage
     }
 
     // Add the new student
@@ -54,4 +54,21 @@ function calculateFinalExamScore(currentAverage: number, finalExamWeight: number
     return 100 * (targetScore - weightedAverage) / finalExamWeight;
 }
 
-export { students, addStudent, getStudent, calculateFinalExamScore };
+function getLetterGrade(score: number): string {
+    // Return the appropriate letter grade
+    let grade: string;
+    if (score < 60) {
+        grade = 'F';
+    } else if (score < 70) {
+        grade = 'D';
+    } else if (score < 80) {
+        grade = 'C';
+    } else if (score < 90) {
+        grade = 'B';
+    } else {
+        grade = 'A';
+    }
+    return grade;
+}
+
+export { students, addStudent, getStudent, calculateFinalExamScore, getLetterGrade };
