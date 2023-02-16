@@ -30,6 +30,11 @@ type AssignmentGrade = {
     grade: number;
 }
 
+type GradeUpdateParams = {
+    studentName: string;
+    assignmentName: string;
+}
+
 type FinalGrade = {
     overallScore: number;
     letterGrade: number;

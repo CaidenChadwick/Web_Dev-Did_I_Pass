@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { students, addStudent, getStudent, calculateFinalExamScore, getLetterGrade } from '../models/StudentModel';
+import { students, addStudent, getStudent, calculateFinalExamScore, getLetterGrade, updateStudentGrade } from '../models/StudentModel';
 
 function getAllStudents(req: Request, res: Response): void {
     res.json(students);
@@ -43,10 +43,8 @@ function getStudentByName(req: Request, res: Response): void {
 }
 
 function getFinalExamScores(req: Request, res: Response): void {
-    // Get the student name from the path params
-    const { studentName } = req.params as StudentNameParams;
-
     // Get the student's data from the dataset
+    const { studentName } = req.params as StudentNameParams;
     const student = getStudent(studentName);
 
     // If the student was not found
@@ -55,7 +53,7 @@ function getFinalExamScores(req: Request, res: Response): void {
         return;
     }
 
-    // FIXME: Get the current average and weights from the student's data
+    // Get the current average and weights from the student's data
     const { currentAverage } = student;
     const finalExamWeight = student.weights.finalExamWeight;
 
@@ -105,6 +103,27 @@ function calcFinalScore(req: Request, res: Response): void {
         "overallScore": overallScore,
         "letterGrade": letterGrade
     });
+
 }
 
-export { getAllStudents, createNewStudent, getStudentByName, getFinalExamScores, calcFinalScore };
+function updateGrade(req: Request, res: Response): void {
+    // Get the student's name and assignment name from the path parameters as a `GradeUpdateParams`
+    const { studentName, assignmentName } = req.params as GradeUpdateParams;
+
+    // Get the grade from the request body as an `AssignmentGrade`
+    const { grade } = req.body as AssignmentGrade;
+
+    // Update the student's grade
+    const didUpdateGrade = updateStudentGrade(studentName, assignmentName, grade);
+
+    // If the update did not complete (this means the student or the assignment wasn't found)
+    if (!didUpdateGrade) {
+        res.sendStatus(404); // 404 Not Found - Student or assignment was not found
+        return;
+    }
+
+    // Respond with status 200 OK
+    res.sendStatus(200); // 200 OK - Grade updated
+}
+
+export { getAllStudents, createNewStudent, getStudentByName, getFinalExamScores, calcFinalScore, updateGrade };

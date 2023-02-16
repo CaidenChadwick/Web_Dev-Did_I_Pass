@@ -71,4 +71,31 @@ function getLetterGrade(score: number): string {
     return grade;
 }
 
-export { students, addStudent, getStudent, calculateFinalExamScore, getLetterGrade };
+function updateStudentGrade(studentName: string, assignmentName: string, newGrade: number): boolean {
+    // Get the student's data from the dataset
+    const student = getStudent(studentName);
+
+    // If the student was not found
+    if (!student) {
+        return false;
+    }
+
+    // Search the student's `assignmentWeights` and find the assignment with the matching name using the .find() method
+    const assignment = student.weights.assignmentWeights.find(element => element.name === assignmentName);
+
+    // If the assignment was not found
+    if (!assignment) {
+        return false;
+    }
+
+    // Set the assignment's grade to the newGrade
+    assignment.grade = newGrade;
+
+    // Then recalculate the student's currentAverage
+    student.currentAverage = calculateAverage(student.weights);
+
+    // return true since the update completed successfully
+    return true;
+}
+
+export { students, addStudent, getStudent, calculateFinalExamScore, getLetterGrade, updateStudentGrade };
